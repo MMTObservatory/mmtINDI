@@ -1,0 +1,701 @@
+.TH indidevapi 4
+
+
+.SH NAME
+indidevapi \- INDI 1.7 Device Driver C-language reference API
+
+
+.SH SYNOPSIS
+#include "indidevapi.h"
+.PP
+[indidrivermain.o] indidriverbase.o -lastro -llilxml -lip -lz -lm
+.PP
+\fIFunctions an INDI Driver must define\fP
+.PP
+void ISGetProperties (const char *dev, const char *name);
+.br
+void ISNewText (const char *dev, const char *name, char *texts[], char *names[], int n); 
+.br
+void ISNewNumber (const char *dev, const char *name, double *doubles, char *names[], int n); 
+.br
+void ISNewSwitch (const char *dev, const char *name, ISState *states, char *names[], int n); 
+.br
+void ISNewBLOB (const char *dev, const char *name, int sizes[], int blobsizes[], char *blobs[], char *formats[], char *names[], int n); 
+.br
+void ISSnoopDevice (XMLEle *root);
+.PP
+\fIFunctions an INDI Driver may call\fP
+.PP
+void IDDefText (const ITextVectorProperty *t, const char *msg, ...);
+.br
+void IDFDefText (FILE *fp, const ITextVectorProperty *t, const char *msg, ...);
+.br
+void IDDefNumber (const INumberVectorProperty *n, const char *msg, ...);
+.br
+void IDFDefNumber (FILE *fp, const INumberVectorProperty *n, const char *msg, ...);
+.br
+void IDDefSwitch (const ISwitchVectorProperty *s, const char *msg, ...);
+.br
+void IDFDefSwitch (FILE *fp, const ISwitchVectorProperty *s, const char *msg, ...);
+.br
+void IDDefLight (const ILightVectorProperty *l, const char *msg, ...);
+.br
+void IDFDefLight (FILE *fp, const ILightVectorProperty *l, const char *msg, ...);
+.br
+void IDDefBLOB (const IBLOBVectorProperty *b, const char *msg, ...);
+.br
+void IDFDefBLOB (FILE *fp, const IBLOBVectorProperty *b, const char *msg, ...);
+.br
+void IDSetText (const ITextVectorProperty *t, const char *msg, ...);
+.br
+void IDFSetText (FILE *fp, const ITextVectorProperty *t, const char *msg, ...);
+.br
+void IDSetNumber (const INumberVectorProperty *n, const char *msg, ...);
+.br
+void IDFSetNumber (FILE *fp, const INumberVectorProperty *n, const char *msg, ...);
+.br
+void IDSetSwitch (const ISwitchVectorProperty *s, const char *msg, ...);
+.br
+void IDFSetSwitch (FILE *fp, const ISwitchVectorProperty *s, const char *msg, ...);
+.br
+void IDSetLight (const ILightVectorProperty *l, const char *msg, ...);
+.br
+void IDFSetLight (FILE *fp, const ILightVectorProperty *l, const char *msg, ...);
+.br
+void IDSetBLOB (const IBLOBVectorProperty *b, const char *msg, ...);
+.br
+void IDFSetBLOB (FILE *fp, const IBLOBVectorProperty *b, const char *msg, ...);
+.br
+void IDMessage (const char *dev, const char *msg, ...);
+.br
+void IDFMessage (FILE *fp, const char *dev, const char *msg, ...);
+.br
+void IDDelete (const char *dev, const char *name, const char *msg, ...);
+.br
+void IDFDelete (FILE *fp, const char *dev, const char *name, const char *msg, ...);
+.br
+void IDLog (const char *msg, ...);
+.br
+void IDSnoopDevice (char *snooped_device, char *snooped_name);
+.br
+void IDFSnoopDevice (FILE *fp, char *snooped_device, char *snooped_name);
+.br
+typedef enum {B_NEVER=0, B_ALSO, B_ONLY} BLOBHandling;
+.br
+void IDSnoopBLOBs (char *snooped_device, BLOBHandling bh);
+.br
+void IDFSnoopBLOBs (FILE *fp, char *snooped_device, BLOBHandling bh);
+.PP
+IText   *IUFindText  (const ITextVectorProperty *tp, const char *name);
+.br
+INumber *IUFindNumber(const INumberVectorProperty *np, const char *name);
+.br
+ISwitch *IUFindSwitch(const ISwitchVectorProperty *sp, const char *name);
+.br
+ISwitch *IUFindOnSwitch (const ISwitchVectorProperty *sp);
+.br
+int IUCrackNumber(INumberVectorProperty *nvp, const char *dev, const char *name, double *doubles, char *names[], int n);
+.br
+int IUCrackText(ITextVectorProperty *tvp, const char *dev, const char *name, char *texts[], char *names[], int n);
+.br
+int IUCrackSwitch(ISwitchVectorProperty *svp, const char *dev, const char *name, ISState *states[], char *names[], int n);
+.br
+int IUCrackBLOB(IBLOBVectorProperty *bvp, const char *dev, const char *name, int sizes[], int blobsizes[], char *blobs[], char *formats[], char *names[], int n);
+.br
+int IUSnoopNumber (XMLEle *root, INumberVectorProperty *nvp);
+.br
+int IUSnoopText (XMLEle *root, ITextVectorProperty *tvp);
+.br
+int IUSnoopLight (XMLEle *root, ILightVectorProperty *lvp);
+.br
+int IUSnoopSwitch (XMLEle *root, ISwitchVectorProperty *svp);
+.br
+int IUSnoopBLOB (XMLEle *root, IBLOBVectorProperty *bvp);
+.br
+void IUResetSwitches(const ISwitchVectorProperty *svp);
+.br
+void IUSaveText (IText *tp, const char *ftm, ...);
+.br
+int IUAddConnection (int fd);
+.br
+void IUEventLoop (void);
+.PP
+int  IEAddCallback (int readfiledes, IE_CBF *fp, void *userpointer);
+.br
+void IERmCallback (int callbackid);
+.br
+int  IEAddTimer (int millisecs, IE_TCF *fp, void *userpointer);
+.br
+void IERmTimer (int timerid);
+.br
+int  IEAddWorkProc (IE_WPF *fp, void *userpointer);
+.br
+void IERmWorkProc (int workprocid);
+.br
+int IEDeferLoop (int maxms, int *flagp);
+.br
+int IEDeferLoop0 (int maxms, int *flagp);
+.br
+
+
+.SH OVERVIEW
+.PP
+.na
+.nh
+These functions are the interface to the INDI C-language Device Driver
+reference implementation framework. They are declared in indidevapi.h.
+This in turn includes indiapi.h, which defines the various data structures and
+associated constants used by these functions.
+Any Driver that uses this interface is expected to #include "indidevapi.h",
+to optionally link with indidrivermain.o and to definitely link with indidriverbase.o,
+eventloop.o and lilxml.a. Although written in C, care has been taken that this
+framework can be compiled and used successfully with C++ as well.
+.PP
+These functions make it much easier to write a compliant INDI Driver than
+handling the XML INDI protocol from scratch, and also serve as a concrete
+example of the interactions an INDI Driver, in any language, is expected to
+accommodate. The reference Driver framework and the optimizations made within
+the reference indiserver both assume and require that one Driver program
+implements exactly one logical INDI device.
+.PP
+An INDI Driver is usually a process that reads and writes INDI messages on
+its stdin and stdout, respectively. One of the design goals for this Driver
+framework is to avoid having to deal with the XML that is flowing on these
+channels.
+.PP
+Incoming messages (generally from Clients but also possibly from
+Drivers on which we have chosen to Snoop) are handled as callbacks. The names of
+all such callbacks begin with IS and are listed above. These are functions
+that the user-written Driver code never calls but must define so they will
+be ready if the Driver framework chooses to call them. The framework
+parses the incoming XML and, if it is legal INDI, calls the appropriate IS
+callback depending on the type of the message. The callback provides the
+message content in a convenient form as the target device, property
+name and an array of the associated elements. The user writes each IS
+function so it performs the desired action when a given INDI property message
+has arrived. The content of these functions is entirely up the author of the
+Driver. The author may find it useful to utilize the utility functions, which
+begin with IU, but that is not required.
+.PP
+Outgoing INDI XML messages (from our Driver to interested Clients and possibly to other
+Drivers if they are Snooping on us) are generated by calling the ID functions.
+Again, there is one such function for each type of INDI message.
+.PP
+Occasionally it is useful for a Driver to be multi-threaded. In this case,
+all calls to IUAddConnection() and IUEventLoop(), if used, must be
+made in the same thread, from which it follows that all IS callbacks will
+also occur in that same thread. On the other hand, since the ID functions are
+all thread safe, they may be called from any thread at any time and they will
+take care to marshal their data flow properly on their respective channels.
+.PP
+The framework includes its own definition of the main() C program in
+indidrivermain.c. It just calls IUAddConnection(0) to allow parsing
+of incoming messages on stdin and then calls IUEventLoop() to process them
+from then on. When using this main(), the Driver author just implements the IS
+functions and reacts to incoming messages, probably calling the ID functions
+to publish information. Also in this scenario, the framework guarantees that
+the first IS callback that will occur will always be ISGetProperties(). This is the
+correct place for any one-time initialization the Driver requires,
+protected with a static flag so it is not performed more than once.
+.PP
+Occasionally it is useful for a Driver to have its own main() function.
+If it still wants to use its stdio for INDI traffic, this main need only
+call IUAddConnection(0) and IUEventLoop() to enable the INDI IS callback
+mechanism. If it wants to publish a server socket for INDI
+traffic, it should do this in a separate thread. The new thread is
+created early in main(), creates the socket, then connects to incoming
+traffic by passing it to IUAddConnection(socket) and handing control
+over to IUEventLoop(). In this case, the indiserver would use its chaining
+"Driver@host" syntax to connect to this as a remote Driver. Note that if this
+remote connection ever breaks, IUEventLoop will return, the thread should call
+IERmCallback() with the id returned by IUAddConnection(), then it can listen
+again for a new connection. The code would have the following basic structure:
+.nf
+
+    /* create server socket */
+    listen_socket = createINDIService();
+    if (listen_socket < 0)
+        exit(1);    /* given up */
+
+    /* handle new connections, one at a time */
+    while (1) {
+        int id, connection_socket;
+        
+        /* wait for new connection /
+        connection_socket = newINDIConnection (listen_socket);
+        if (connection_socket < 0)
+            exit(1);        /* give up */
+
+        /* create connection as a FILE also for use in calling IDF functions */
+        indiout = fdopen (connection_socket, "w");
+
+        /* handle callbacks until loss of connection */
+        id = IUAddConnection (connection_socket);
+        IUEventLoop();
+
+        /* close and disconnect */
+        fclose (indiout);   /* also closes connection_socket */
+        IERmCallback (id);
+    }
+.fi
+.PP
+Rather separate from these IS, ID and IU functions are a collection of
+functions that give the user additional callbacks. These begin with IE.  In a
+callback design, the Driver registers a function of its own creation with the
+framework to be called later under certain circumstances.  The Driver never
+calls its callback functions directly.  The prototype of the called back
+function must exactly match the type defined by the corresponding registration
+function.  Depending on which IE function is used to register the callback,
+the function will be called under one of three kinds of circumstances: 1) when
+a given file descriptor may be read without blocking (because either data is
+available or EOF has been encountered); 2) when a given time interval has
+elapsed, or 3) when the framework has nothing else to do.
+
+
+.SH IS Functions: functions all Drivers must define
+.PP
+This section defines functions that must be defined in each Driver. These
+functions are never called by the Driver user code, but are called by the
+framework. Again, these functions must always be defined even if they do nothing.
+.PP
+void ISGetProperties (const char *dev, const char *name);
+.IP
+This function is called by the framework whenever the Driver has received a
+getProperties message from an INDI Client. The argument \fIdev\fP is either a
+string containing the name of the device specified within the message, or NULL
+if no device was specified. Similarly, name is either the specific Property being
+interrogated or NULL to indicate all properties. If the Driver does not
+recognize the device, it should ignore the message and do nothing. If dev
+matches the device for which the Driver is implementing, or dev is NULL, the
+Driver must respond by calling IDDefXXX for each property defined by this device,
+including its current (or initial) value. Note that the framework guarantees
+that this function will be the first callback called after connecting to an
+indiserver, thus this is the correct place for any one-time initialization the
+Driver requires, protected with a static flag so it is not performed more than once.
+.PP
+void ISNewText (const char *dev, const char *name, char *texts[], char *names[], int n); 
+.IP
+This function is called by the framework whenever the Driver has received a
+newTextVector message from an INDI Client. The arguments \fIdev\fP and
+\fIname\fP are the device and name attribute within the message, respectively.
+The arguments \fItexts\fP and \fInames\fP are parallel arrays, each containing
+\fIn\fP entries, that contain the content and name pairs of each of the oneText
+elements within the message. The function IUCrackText makes it easier to
+handle these arguments. The usual response to having received a newTextVector
+message is to perform any associated processing then send updated values and
+states for effected properties implemented by the Driver using the IDSet
+functions.
+.PP
+void ISNewNumber (const char *dev, const char *name, double *doubles, char *names[], int n); 
+.IP
+This function is called by the framework whenever the Driver has received a
+newNumberVector message from an INDI Client. The arguments \fIdev\fP and
+\fIname\fP are the device and name attribute within the message, respectively.
+The arguments \fIdoubles\fP and \fInames\fP are parallel arrays, each containing
+\fIn\fP entries, that contain the value and name pairs of each of the oneNumber
+elements within the message. The function IUCrackNumber makes it easier to
+handle these arguments. The usual response to having received a newNumberVector
+message is to perform any associated processing then send updated values and
+states for effected properties implemented by the Driver using the IDSet
+functions.
+.PP
+void ISNewSwitch (const char *dev, const char *name, ISState *states, char *names[], int n); 
+.IP
+This function is called by the framework whenever the Driver has received a
+newSwitchVector message from an INDI Client. The arguments \fIdev\fP and
+\fIname\fP are the device and name attribute within the message, respectively.
+The arguments \fIstates\fP and \fInames\fP are parallel arrays, each containing
+\fIn\fP entries, that contain the state and name pairs of each of the oneSwitch
+elements within the message. The function IUCrackSwitch makes it easier to
+handle these arguments. The usual response to having received a newSwitchVector
+message is to perform any associated processing then send updated values and
+states for effected properties implemented by the Driver using the IDSet
+functions.
+.PP
+void ISNewBLOB (const char *dev, const char *name, int sizes[], int blobsizes[], char *blobs[], char *formats[], char *names[], int n); 
+.IP
+This function is called by the framework whenever the Driver has received a
+newBLOBVector message from an INDI Client. The arguments \fIdev\fP and
+\fIname\fP are the device and name attribute within the message, respectively.
+The remaining array arguments are parallel arrays of \fIn\fP entries each, one
+for each oneBLOB element in the newBLOBVectory message. \fIsizes\fP is the
+number of bytes in the original raw BLOB and \fIblobsizes\fP is the number of 
+encoded bytes in the BLOB. The encoded BLOB itself is in \fIblobs\fP, encoded
+in base64. \fIformats\fP is the BLOB's format specification or file suffix. \fInames\fP is
+the name of this BLOB. Handy base64 handling functions are available in the lilxml.a
+library.
+.PP
+void ISSnoopDevice (XMLEle *root);
+.IP
+This function is called by the framework whenever a Device that has been
+previously arranged to be snooped upon (using IDSnoopDevice()) has sent any
+INDI message. The argument contains the full message exactly as it was sent by
+the snooped Driver. The most common cases of wanting to crack setXXX or defXXX
+messages are made easier by using the IUSnoopXXX utility functions.
+.IP
+Note this function is new to Version 1.7 of the INDI protocol. For Drivers
+built to earlier interfaces, the following minimal one-liner implementation
+will suffice if no Snooping behavior is desired:
+.IP
+void ISSnoopDevice (XMLEle *root) {}
+.PP
+
+
+.SH ID Functions: functions a Driver calls to send a message to a Client
+.PP
+Each of the following ID functions creates the appropriate XML formatted
+INDI message from its arguments and writes it to stdout. From there, it is
+typically read by the indiserver which then sends it to the Clients that have
+expressed interest in messages from the Device indicated in the message,
+or to Drivers that have requested to snoop on the Device.
+.PP
+All of these functions are thread safe, and all insure their traffic is on the
+wire before returning.
+.PP
+Each of these functions is also available in a variation which includes
+a FILE pointer as the first argument. These functions have a prefix of IDF.
+They are used for situations where the Driver wants to send an INDI message to
+some channel other than stdout.
+.PP
+In addition to type-specific arguments, most end with a printf-style format
+string, and appropriate subsequent arguments, that will constitute the
+\fImessage\fP attribute within the INDI message. If the format argument is
+NULL, no \fImessage\fP attribute is included with the message. Note that a
+\fItimestamp\fP attribute is also always added automatically by the
+framework based on the clock on the computer on which this Driver is running.
+
+.PP
+void IDDefText (const ITextVectorProperty *t, const char *msg, ...);
+.br
+void IDFDefText (FILE *fp, const ITextVectorProperty *t, const char *msg, ...);
+.br
+void IDDefNumber (const INumberVectorProperty *n, const char *msg, ...);
+.br
+void IDFDefNumber (FILE *fp, const INumberVectorProperty *n, const char *msg, ...);
+.br
+void IDDefSwitch (const ISwitchVectorProperty *s, const char *msg, ...);
+.br
+void IDFDefSwitch (FILE *fp, const ISwitchVectorProperty *s, const char *msg, ...);
+.br
+void IDDefLight (const ILightVectorProperty *l, const char *msg, ...);
+.br
+void IDFDefLight (FILE *fp, const ILightVectorProperty *l, const char *msg, ...);
+.br
+void IDDefBLOB (const IBLOBVectorProperty *b, const char *msg, ...);
+.br
+void IDFDefBLOB (FILE *fp, const IBLOBVectorProperty *b, const char *msg, ...);
+.PP
+The Def functions transmit an INDI defXXX message. The INDI protocol requires
+that these messages be sent before the first setXXX messages.
+.PP
+void IDSetText (const ITextVectorProperty *t, const char *msg, ...);
+.br
+void IDFSetText (FILE *fp, const ITextVectorProperty *t, const char *msg, ...);
+.br
+void IDSetNumber (const INumberVectorProperty *n, const char *msg, ...);
+.br
+void IDFSetNumber (FILE *fp, const INumberVectorProperty *n, const char *msg, ...);
+.br
+void IDSetSwitch (const ISwitchVectorProperty *s, const char *msg, ...);
+.br
+void IDFSetSwitch (FILE *fp, const ISwitchVectorProperty *s, const char *msg, ...);
+.br
+void IDSetLight (const ILightVectorProperty *l, const char *msg, ...);
+.br
+void IDFSetLight (FILE *fp, const ILightVectorProperty *l, const char *msg, ...);
+.br
+void IDSetBLOB (const IBLOBVectorProperty *b, const char *msg, ...);
+.br
+void IDFSetBLOB (FILE *fp, const IBLOBVectorProperty *b, const char *msg, ...);
+.IP
+These Set functions transmit an INDI setXXX message. The INDI protocol
+requires that these message may be ignored if their corresponding defXXX
+messages have not been sent previously.
+
+.PP
+void IDMessage (const char *dev, const char *msg, ...);
+.br
+void IDFMessage (FILE *fp, const char *dev, const char *msg, ...);
+.IP
+These functions format an INDI \fImessage\fP message. If \fIdev\fP is NULL, the
+message will be sent without being associated with a particular device,
+otherwise the message will be marked as coming from the given device.
+
+.PP
+void IDDelete (const char *dev, const char *name, const char *msg, ...);
+.br
+void IDFDelete (FILE *fp, const char *dev, const char *name, const char *msg, ...);
+.IP
+These functions format an INDI delProperty message for the given device. If
+\fIname\fP is NULL, the message indicates that all Properties should be
+deleted, otherwise to delete only the Property with the given name.
+
+.PP
+void IDLog (const char *msg, ...);
+.IP
+This function writes the given printf-style message to the Driver process
+stderr. This has the effect that the indiserver will capture this
+message and add it to its own log, including a time stamp and indication
+of the Driver from which the message came. This function is thread safe.
+
+.PP
+void IDSnoopDevice (char *snooped_device, char *snooped_name);
+.br
+void IDFSnoopDevice (FILE *fp, char *snooped_device, char *snooped_name);
+.IP
+These functions format an INDI getProperties message which, when transmitted
+by a Driver, indicates to the indiserver that the calling Driver wants to
+snoop messages from the given device and optional property name. All
+properties are snooped if
+.I snooped_name
+is NULL or empty; all devices are snooped if they are both NULL or empty.
+After making this call, indiserver sends all qualifying messages
+sent by 
+.I snooped_device
+to this Driver which in turn causes the framework to invoke the ISSnoopDevice()
+callback for local processing. The IUSnoop* utility functions are useful for this.
+However, note that BLOBs will only delivered
+depending on whether and how IDSnoopBLOBs() has been called for the snooped
+device.
+
+.PP
+typedef enum {B_NEVER=0, B_ALSO, B_ONLY} BLOBHandling;
+.br
+void IDSnoopBLOBs (char *snooped_device_name, BLOBHandling bh);
+.br
+void IDFSnoopBLOBs (FILE *fp, char *snooped_device, BLOBHandling bh);
+.IP
+These functions format an INDI \fIenableBLOB\fP message indicating the conditions
+under which BLOBs will be received from the given snooped device. To have
+effect, this must be called after a previous call to ISSnoopDevice() for the
+same device, otherwise it is ignored. The default BLOB handling mode, before
+this is called, is B_NEVER.
+.PP
+
+
+.SH IU Functions: utility functions a Driver may call for its convenience
+.PP
+This section describes handy utility functions that are provided by the
+framework for tasks commonly required in the processing of Client or
+snooped device messages. It is not strictly necessary to use these functions,
+but it is prudent and efficient to do so.
+.PP
+IText *IUFindText  (const ITextVectorProperty *tp, const char *name);
+.IP
+This function searches through the given ITextVectorProperty for an IText
+member with the given name. Returns a pointer to the found IText if found,
+else NULL.
+.PP
+INumber *IUFindNumber(const INumberVectorProperty *np, const char *name);
+.IP
+This function searches through the given INumberVectorProperty for an INumber
+member with the given name. Returns a pointer to the found INumber if found,
+else NULL.
+.PP
+ISwitch *IUFindSwitch(const ISwitchVectorProperty *sp, const char *name);
+.IP
+This function searches through the given ISwitchVectorProperty for an ISwitch
+member with the given name. Returns a pointer to the found ISwitch if found,
+else NULL.
+.PP
+ISwitch *IUFindOnSwitch (const ISwitchVectorProperty *sp);
+.IP
+This function searches through the given ISwitchVectorProperty for the first
+ISwitch member that is set to ISS_ON. Returns a pointer to said member if
+found, else NULL. Note it is up to the caller to make sense of the result
+keeping in mind the ISRule for the given ISwitchVectorProperty.
+.PP
+int IUCrackNumber(INumberVectorProperty *nvp, const char *dev, const char *name, double *doubles, char *names[], int n);
+.IP
+This is a convenience function for use in the implementation of ISNewNumber()
+whose arguments can be passed directly here. This function scans the
+doubles passed in and fills in corresponding INumber members of the given
+INumberVectorProperty. This function returns zero for success, or -1 if
+the device and name do not exactly match the given INumberVectorProperty or if all
+INumber members of the given INumberVectorProperty are not defined.
+.PP
+int IUCrackText(ITextVectorProperty *tvp, const char *dev, const char *name, char *texts[], char *names[], int n);
+.IP
+This is a convenience function for use in the implementation of ISNewText()
+whose arguments can be passed directly here. This function scans the
+text strings passed in and fills in corresponding IText members of the given
+INumberVectorProperty. This function returns zero for success, or -1 if
+the device and name do not exactly match the given ITextVectorProperty or if all
+IText members of the given INumberVectorProperty are not defined. This
+function uses IUSaveText to make freshly malloced copies of all strings.
+.PP
+int IUCrackSwitch(ISwitchVectorProperty *svp, const char *dev, const char *name, ISState *states, char *names[], int n);
+.IP
+This is a convenience function for use in the implementation of ISNewSwitch()
+whose arguments can be passed directly here. This function scans the
+states passed in and fills in corresponding ISwitch members of the given
+ISwitchVectorProperty. This function returns zero for success, or -1 if
+the device and name do not exactly match the given ISwitchVectorProperty, if all
+ISwitch members of the given ISwitchVectorProperty are not defined, or if
+the number of ISwitch values that are on (ISS_ON) does not agree with the switch rule.
+.PP
+int IUCrackBLOB(IBLOBVectorProperty *bvp, const char *dev, const char *name, int sizes[], int blobsizes[], char *blobs[], char *formats[], char *names[], int n);
+.IP
+This is a convenience function for use in the implementation of ISNewBLOB()
+whose arguments can be passed directly here. This function scans the
+states passed in and fills in corresponding IBLOB members of the given
+IBLOBVectorProperty. This function returns zero for success, or -1 if
+the device and name do not exactly match the given IBLOBVectorProperty, if all
+IBLOB members of the given IBLOBVectorProperty are not defined.
+Although this function enforces matching formats and sets each bvp->bp[i].size
+it does not uncompress the blob.
+.PP
+void IUResetSwitches(const ISwitchVectorProperty *svp);
+.IP
+This function sets the state of each ISwitch within the given
+ISwitchVectorProperty to ISS_OFF.
+.PP
+void IUSaveText (IText *tp, const char *fmt, ...);
+.IP
+This function is always to be used to set the text value for an IText. It
+saves a freshly malloced copy of the printf-style \fIfmt\fP, reallocing memory already
+in use by the given IText if necessary.
+.IP
+For safefty and consistency, it is important not to mix using this
+function with setting the \fItext\fP field of the given IText directly from
+stack or static strings. Similarly, static definitions of IText must not
+include static initializer strings for the text field, but should leave the
+field 0 and eventually call this to set a string.
+.PP
+int IUAddConnection (int fd);
+.IP
+This function may be called by a Driver to add another file descriptor from
+which to listen for incoming INDI messages. The descriptor is expected to be a socket
+connected to an indiserver. The arrival of subsequent new* messages will invoke
+the appropriate IS callback. The implementation of these callbacks can
+distinguish the source of the message using the device and name arguments.
+This call only sets up to handle the messages. Their callbacks will not actually
+be invoked until the Driver calls IUEventLoop(), either explicitly if it has
+its own main() or implicitly from the default main() provided in
+indidrivermain.c. Note also that this call must be made from the same thread
+as that which calls IUEventLoop() and all IS callbacks will occur in this same
+thread. The call returns the value of the id assigned to the client message
+dispatch callback in case the Driver ever wants to call IERmCallback().
+
+.PP
+void IUEventLoop (void);
+.IP
+This function must eventually be called by a Driver to relinquish
+control to the Driver framework, allowing it to read INDI messages and dispatch 
+callbacks. The function usually never returns so from this point forward the Driver
+code must be designed to operate entirely from callbacks. If using the default
+main() provided in indidrivermain.c, it has already called this function so
+the user should not call this function again. Note also that this call must be made
+from the same thread as that which calls IUAddConnection() and all IS callbacks
+will occur in this same thread. The only way this call returns is if any of
+the callbacks sets the global variable eloop_error.
+
+.PP
+int IUSnoopNumber (XMLEle *root, INumberVectorProperty *nvp);
+.br
+int IUSnoopText (XMLEle *root, ITextVectorProperty *tvp);
+.br
+int IUSnoopLight (XMLEle *root, ILightVectorProperty *lvp);
+.br
+int IUSnoopSwitch (XMLEle *root, ISwitchVectorProperty *svp);
+.br
+int IUSnoopBLOB (XMLEle *root, IBLOBVectorProperty *bvp);
+.IP
+These convenience functions will crack a setXXX or defXXX message arriving
+from a snooped Driver via ISSnoopDevice() into the given vector property.
+These functions return zero for success, or -1 if the message's device and name
+do not exactly match the given vector property or if all INumber or IText members of
+the given INumberVectorProperty or ITextVectorProperty, respectively, are not
+defined.
+.PP
+
+
+.SH IE Functions: functions a Driver may call to arrange for or cancel a user-defined callback
+.PP
+The following functions record a callback function in the framework and
+arrange for the framework to call it in the future under
+certain conditions. It is important that the callback functions return quickly
+because while they are executing the other functionality provided by the
+framework is unavailable. Of course "quickly" is a nebulous term but one way
+to think of it is as the longest period of time in which the Driver
+may appear to be unresponsive to Client interactions.
+.PP
+int IEAddCallback (int readfiledes, IE_CBF *fp, void *userpointer);
+.IP
+This function records the function pointed to by \fIfp\fP and arranges for
+the Driver framework to call it whenever reading from the given file
+descriptor will not block, ie, when there is data ready or EOF has been
+encountered. \fIuserpointer\fP is also recorded with its value at the time
+this function is called and will be passed as an argument to the callback
+function whenever it is called in the future. This function returns a
+unique identifier cookie that may be passed to \fIIERmCallback\fP to
+remove the record of \fIfp\fP from the framework. \fIfp\fP must point to a
+function that has the following prototype:
+.IP
+typedef void (IE_CBF) (int readfiledes, void *userpointer);
+.PP
+void IERmCallback (int callbackid);
+.IP
+This function takes as an argument an identifier cookie returned by a
+previous call to \fIIEAddCallback\fP and removes the corresponding callback
+function from the framework.
+.PP
+int  IEAddTimer (int millisecs, IE_TCF *fp, void *userpointer);
+.IP
+This function records the function pointed to by \fIfp\P and arranges for 
+the Driver framework to call it one time after at least the given number of
+milliseconds have elapsed. \fIuserpointer\fP is also recorded with its value
+at the time this function is called and will be passed as an argument to the
+callback function whenever it is called in the future. This function returns a
+unique identifier cookie that may be passed to \fIIERmTimer\fP to
+remove the record of \fIfp\fP from the framework. \fIfp\fP must point to a
+function that has the following prototype:
+.IP
+typedef void (IE_TCF) (void *userpointer);
+.PP
+void IERmTimer (int timerid);
+.IP
+This function takes as an argument an identifier cookie returned by a
+previous call to \fIIEAddTimer\fP and removes the corresponding callback
+function from the framework.
+.PP
+int  IEAddWorkProc (IE_WPF *fp, void *userpointer);
+.IP
+This function records the function pointed to by \fIfp\P and arranges for 
+the Driver framework to call it when it has nothing else to do.
+\fIuserpointer\fP is also recorded with its value
+at the time this function is called and will be passed as an argument to the
+callback function whenever it is called in the future. This function returns a
+unique identifier cookie that may be passed to \fIIERmWorkProc\fP to
+remove the record of \fIfp\fP from the framework. \fIfp\fP must point to a
+function that has the following prototype:
+.IP
+typedef void (IE_WPF) (void *userpointer);
+.PP
+void IERmWorkProc (int workprocid);
+.IP
+This function takes as an argument an identifier cookie returned by a
+previous call to \fIIEAddWorkProc\fP and removes the corresponding callback
+function from the framework.
+.PP
+int IEDeferLoop (int maxms, int *flagp);
+.IP
+Unlike the "callback" model used by the other event functions, this
+function gives the caller a means to wait in-line for a flag to be true (any value other than 0).
+The flag is presumed to be set by some other event callback function, and a pointer to
+it is passed here. This function allows other timers/callbacks/workprocs to run
+until either the value pointed to becomes non-zero, or at least maxms
+milliseconds elapses. If maxms is 0, then there is no timeout and the deferral
+is willing to wait forever. This function returns 0 if the flag was set, or
+-1 if it times out.
+.PP
+int IEDeferLoop0 (int maxms, int *flagp);
+.IP
+This is the logical inverse of IEDeferLoop(), ie, it waits for *flagp to become 0.
+.PP
+
+.SH SEE ALSO
+.PP
+evalINDI, getINDI, setINDI, indiserver
+.br
+http://www.clearskyinstitute.com/INDI/INDI.pdf

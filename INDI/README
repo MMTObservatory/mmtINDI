@@ -1,0 +1,45 @@
+This is the core INDI distribution.
+
+libindic.a:
+    configfile.c
+    configfile.h
+    eventloop.c
+    eventloop.h
+    indidevapi.h
+    indidriverbase.c
+    indidrivermain.c
+    indiapi.h
+
+man pages:
+    getINDI.man
+    setINDI.man
+    indidevapi.man
+    evalINDI.man
+    indiserver.man
+
+indiserver:
+    indiserver.c
+
+command line tools:
+    getINDI.c
+    setINDI.c
+    evalINDI.c
+    compiler.c
+    connect_to.c
+    connect_to.h
+
+sample, but quite possibly useful, INDI drivers:
+    indishell.c
+    indisimbad.c
+    indisimbadprops.c
+    indisimbadprops.h
+    inditime.c
+    indistub.c
+
+misc:
+    fq.c
+    fq.h
+    localrs.c
+    localrs.h
+    location.c
+    location.h
